@@ -1,0 +1,261 @@
+/* All styling for the Animator app. The .gleam files only attach class names. */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+
+/* ── Layout: two columns ─────────────────────────────────────────────────── */
+
+.app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background: #1a1a2e;
+  color: #d4c5a0;
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+}
+
+/* Left column: the code editor. */
+.code-col {
+  width: 42%;
+  min-width: 320px;
+  max-width: 720px;
+  flex-shrink: 0;
+  display: flex;
+  border-right: 1px solid #3a3a5e;
+  background: #0f0f1e;
+}
+
+/* The code column stays in the DOM when collapsed, so CodeMirror keeps its
+   state; hiding it gives the right column the full width. */
+.app.code-hidden .code-col { display: none; }
+
+/* A small emoji button (the code pane's collapse toggle, and the playback
+   controls once they exist). */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #2a2a4a;
+  color: #d4c5a0;
+  border: 1px solid #4a4a8a;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 5px 8px;
+}
+.icon-btn:hover { background: #3a3a5e; }
+
+/* ── Code panel (left column) ───────────────────────────────────────────── */
+
+.code-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #1a1a3e;
+  border-bottom: 1px solid #3a3a5e;
+}
+.code-title {
+  color: #e8d8b0;
+  font-family: 'Georgia', serif;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+/* Wrapper holding the editor. */
+.code-editor-wrap {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+}
+/* CodeMirror mount node: grows to fill the panel. */
+.code-editor {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+  background: #0d0d1a;
+}
+.code-editor .cm-editor { width: 100%; height: 100%; }
+
+/* Collapsible reference of the built-ins available to draw functions. */
+.reference {
+  margin: 8px 14px 0;
+  border: 1px solid #3a3a5e;
+  border-radius: 4px;
+  background: #0d0d1a;
+  overflow: hidden;
+}
+.reference-summary {
+  padding: 6px 12px;
+  cursor: pointer;
+  color: #b8a888;
+  font-family: monospace;
+  font-size: 12px;
+  user-select: none;
+}
+.reference-summary:hover { color: #e8d8b0; }
+.reference-body {
+  padding: 4px 12px 10px;
+  border-top: 1px solid #3a3a5e;
+}
+.reference-group { margin-top: 8px; }
+.reference-group-title {
+  color: #8a8aca;
+  font-family: monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+.reference-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  padding: 1px 0;
+}
+.reference-sig {
+  color: #89ddff;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre;
+}
+.reference-desc { color: #6a7a8a; font-size: 11px; }
+
+/* ── Animation area (right column) ──────────────────────────────────────── */
+
+.canvas-area {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0a0a14;
+  container-type: size;
+}
+
+/* The interpreter's List(Path) (or its error), shown as text before the
+   animation pane is built. */
+.output {
+  align-self: stretch;
+  margin: 0;
+  padding: 16px;
+  overflow: auto;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #cfe3ff;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+/* Leave room for the reveal button, which only overlays this pane while the
+   code column is hidden. */
+.app.code-hidden .output { padding-top: 48px; }
+
+/* Button that reveals the code column again when it is hidden. */
+.reveal-code {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+}
+
+/* A centred square that fits the (possibly non-square) animation area. Give your
+   <canvas> this class, so that drawings aren't stretched. */
+.canvas {
+  width: min(100cqw, 100cqh);
+  height: min(100cqw, 100cqh);
+}
+
+
+/* Playback controls stay available even when the drawing has an error. */
+.controls {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 12px;
+  border: 1px solid #3a3a5e;
+  border-radius: 6px;
+  background: #1a1a2e;
+}
+.controls input { flex: 1; min-width: 80px; accent-color: #89ddff; }
+.controls label { font-size: 13px; }
+.control-hint { width: 100%; color: #b8a888; font-size: 12px; }
+
+.drawing-library { display: flex; align-items: center; gap: 12px; width: 100%; }
+.drawing-library select {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid #4a4a8a;
+  border-radius: 4px;
+  color: #d4c5a0;
+  background: #0f0f1e;
+}
+/* Ink Surfer — a playable neon sketchbook. */
+.mode-row { display:flex; align-items:center; justify-content:space-between; width:100%; gap:8px; }
+.mode-row > span { font:10px monospace; letter-spacing:.18em; color:#a0acc8; }
+.mode-switch { border:1px solid #6d638b; border-radius:20px; background:#322b4c; color:#eee2ff; padding:6px 12px; cursor:pointer; }
+.surf-pane { position:absolute; inset:0 0 215px; padding:26px 26px 8px; flex-direction:column; gap:10px; overflow:auto; background:#10182b; }
+#surf-game { flex:1; min-height:300px; display:flex; flex-direction:column; }
+.surf-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.surf-eyebrow { font:9px monospace; letter-spacing:.2em; color:#9caec9; margin-bottom:5px; }
+.surf-heading h1 { font:italic 36px Georgia,serif; color:#fff6e6; letter-spacing:-1px; }
+.surf-heading h1 span { color:#f9a8d4; font:24px system-ui; margin-left:10px; }
+.surf-best { color:#a5b3cb; text-align:right; font:9px monospace; letter-spacing:.08em; }
+.surf-best strong { display:block; font:24px monospace; color:#ffe49b; margin-top:5px; }
+.surf-scoreline { display:flex; justify-content:space-between; gap:8px; margin:18px 0 8px; font:10px monospace; color:#a6bbd6; }
+.surf-scoreline strong { color:#67e8f9; font-size:15px; }
+.surf-progress { height:3px; background:#2b3850; border-radius:4px; overflow:hidden; }
+.surf-progress > div { height:100%; width:0; background:#67e8f9; }
+.surf-canvas { width:100%; flex:1; min-height:160px; display:block; touch-action:manipulation; border-radius:8px; outline-offset:-3px; }
+.surf-message { min-height:32px; text-align:center; font-size:12px; line-height:1.5; color:#c6d4e9; padding:4px; }
+.surf-actions { display:flex; justify-content:center; gap:8px; }
+.surf-actions button,.surf-starters button { border:1px solid #42516e; color:#dce6f4; background:#1c2941; border-radius:6px; padding:9px 14px; cursor:pointer; }
+.surf-actions button:first-child { background:#b4f0e6; color:#122c35; border-color:#b4f0e6; font-weight:700; }
+.surf-actions button:hover,.surf-starters button:hover { filter:brightness(1.18); }
+.surf-actions button:disabled { opacity:.4; cursor:default; }
+.surf-help { margin-top:12px; text-align:center; font-size:10px; line-height:1.8; color:#95a7c3; }
+.surf-help span { margin:0 5px; } .surf-help kbd { color:#d8d3eb; }
+.surf-starters { display:flex; align-items:center; flex-wrap:wrap; justify-content:center; gap:6px; }
+.surf-starters span { width:100%; text-align:center; font:8px monospace; letter-spacing:.15em; color:#92a5c3; }
+.surf-starters button { font-size:10px; padding:6px 10px; }
+@media(max-width:760px) { .surf-pane { padding:16px 12px 8px; bottom:245px; } .surf-heading h1 { font-size:28px; } .surf-help { font-size:9px; } }
+
+@media(max-width:640px) {
+  .app:not(.code-hidden) { flex-direction:column; }
+  .app:not(.code-hidden) .code-col { width:100%; min-width:0; max-width:none; height:30vh; border-right:0; border-bottom:1px solid #3a3a5e; }
+  .canvas-area { min-height:0; width:100%; }
+}
+
+.surf-actions { flex-wrap:wrap; }
+.surf-actions [data-action="edit"] { border-color:#a46c9b; color:#f9c8e4; }
+
+.app.surfing .code-col,.surfing .controls,.surfing .reveal-code {display:none}
+.surfing .surf-pane {inset:0;padding:clamp(10px,2vw,28px);background:linear-gradient(145deg,#13182d,#192642 60%,#2d1637)}
+.surfing #surf-game {min-height:310px;min-width:0}
+.surfing .surf-canvas {height:0;min-height:140px;border:1px solid #425174}
+.surfing .surf-starters button:disabled {opacity:.5}
+.surfing .surf-starters {border-top:1px solid #45516e;padding-top:8px}
+
+.surfing .surf-canvas {touch-action:none} .surfing .surf-pane {z-index:3} .surfing #surf-game {flex-shrink:0;min-height:430px}
